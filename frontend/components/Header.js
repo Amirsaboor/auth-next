@@ -1,8 +1,12 @@
 
-
+'use client'
+import AuthContext from "@/context/AuthContext";
 import Link from "next/link";
+import { useContext } from "react";
 
 export default function Header() {
+    const { user } = useContext(AuthContext)
+
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="container">
@@ -26,14 +30,26 @@ export default function Header() {
                         </li>
                     </ul>
 
-                    <div className="d-flex">
-                        <Link href="/auth/login" className="btn btn-sm btn-outline-secondary me-2">
-                            Login
-                        </Link>
-                        <Link href="/auth/register" className="btn btn-sm btn-dark">
-                            register
-                        </Link>
-                    </div>
+                    {user ?
+                        <div className="d-flex">
+                            <Link href="/auth/login" className="btn btn-sm btn-outline-success me-2">
+                                {user.name}
+                            </Link>
+                            <Link href="/auth/register" className="btn btn-sm btn-danger">
+                                logout
+                            </Link>
+                        </div>
+
+                        :
+                        <div className="d-flex">
+                            <Link href="/auth/login" className="btn btn-sm btn-outline-secondary me-2">
+                                Login
+                            </Link>
+                            <Link href="/auth/register" className="btn btn-sm btn-dark">
+                                register
+                            </Link>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>

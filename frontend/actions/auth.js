@@ -1,7 +1,7 @@
 'use server'
 
 import { resolve } from "styled-jsx/css"
-
+import { cookies } from 'next/headers'
 function handelError(data) {
     const errors = []
 
@@ -56,4 +56,71 @@ async function register(state, formData) {
 
 
 }
-export { register }
+
+
+async function login(state, formData) {
+    await new Promise(resolve => {
+        setTimeout(() => {
+            resolve('ok');
+        }, 2000)
+    })
+    const email = formData.get('email')
+    const password = formData.get('password')
+
+    if (email == '' || password == '') {
+        return {
+            error: 'email , password is required'
+        }
+    }
+
+
+    const res = await fetch('http://localhost:8000/api/login', {
+        cache: 'no-store',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email,
+            password,
+        })
+    })
+    const data = await res.json();
+    if (res.ok) {
+        cookies().set({
+            name: 'token',
+            value: `${data.token}`,
+            httpOnly: true
+        })
+        return {
+            success: 'You Are Loged in ',
+            user: data.user
+        }
+    }
+    else return { error: handelError(data) }
+
+
+
+}
+
+
+async function me() {
+    const token = cookies().get('token')
+    if (!token) {
+        return { error: 'Not Authorized' }
+    }
+    const res = await fetch(`http://localhost:8000/api/me`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token.value}`
+        }
+    })
+    const data = await res.json();
+    if (res.ok) {
+        return { user: data.user }
+    } else {
+        return { user: 'User Forbidden' }
+    }
+
+}
+export { register, login, me }
