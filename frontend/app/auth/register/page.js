@@ -1,11 +1,24 @@
 'use client'
 import { register } from "@/actions/auth";
+import SubmitButton from "@/components/SubmitButton";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useFormState } from "react-dom";
+import { toast } from "react-toastify";
 
 
 export default function Register() {
     const [state, formAction] = useFormState(register, {})
+    const router = useRouter()
     console.log(state?.error);
+
+    useEffect(() => {
+        if (state?.error) toast.error(state.error)
+        else if (state?.success) {
+            toast.success(state.success)
+            router.push('/')
+        }
+    }, [state])
 
     return (
         <div className="container">
@@ -31,9 +44,7 @@ export default function Register() {
                             <label htmlFor="confirmPassword" className="form-label">Confirm Password :</label>
                             <input type="password" className="form-control" id="confirmPassword" name="confirmPassword" />
                         </div>
-                        <button type="submit" className="btn btn-primary w-100">
-                            Register
-                        </button>
+                        <SubmitButton title={'Register'} />
                     </form>
                 </div>
             </div>
