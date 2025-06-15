@@ -50,7 +50,17 @@ async function register(state, formData) {
         })
     })
     const data = await res.json();
-    if (res.ok) return { success: 'You Are Registered ' }
+    if (res.ok) {
+        cookies().set({
+            name: 'token',
+            value: `${data.token}`,
+            httpOnly: true
+        })
+        return {
+            success: 'You Are Registered ',
+            user: data.user
+        }
+    }
     else return { error: handelError(data) }
 
 
@@ -123,4 +133,30 @@ async function me() {
     }
 
 }
-export { register, login, me }
+
+async function logout() {
+    const token = cookies().get('token')
+
+    const res = await fetch(`http://localhost:8000/api/logout`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token.value}`,
+            'Accept': 'application/json'
+        }
+    })
+    const data = await res.json();
+    if (res.ok) {
+        cookies().delete('token')
+
+        return {
+            success: 'You Are LogOout'
+        }
+    } else {
+        return { error: handelError(data) }
+    }
+
+}
+
+
+
+export { register, login, me, logout }

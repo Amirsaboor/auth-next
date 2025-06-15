@@ -1,8 +1,9 @@
 'use client'
 import { register } from "@/actions/auth";
 import SubmitButton from "@/components/SubmitButton";
+import AuthContext from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useFormState } from "react-dom";
 import { toast } from "react-toastify";
 
@@ -10,12 +11,15 @@ import { toast } from "react-toastify";
 export default function Register() {
     const [state, formAction] = useFormState(register, {})
     const router = useRouter()
+    const { loginContext } = useContext(AuthContext)
+
     console.log(state?.error);
 
     useEffect(() => {
         if (state?.error) toast.error(state.error)
         else if (state?.success) {
             toast.success(state.success)
+            loginContext(state?.user)
             router.push('/')
         }
     }, [state])

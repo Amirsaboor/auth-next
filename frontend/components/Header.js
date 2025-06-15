@@ -1,11 +1,21 @@
 
 'use client'
+import { logout } from "@/actions/auth";
 import AuthContext from "@/context/AuthContext";
+import { redirect } from "next/dist/server/api-utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext } from "react";
 
 export default function Header() {
-    const { user } = useContext(AuthContext)
+    const { user, logoutContext } = useContext(AuthContext)
+    const router = useRouter()
+
+    const logouthandler = async () => {
+        await logout()
+        logoutContext()
+        router.push('/')
+    }
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -32,12 +42,12 @@ export default function Header() {
 
                     {user ?
                         <div className="d-flex">
-                            <Link href="/auth/login" className="btn btn-sm btn-outline-success me-2">
+                            <Link href="/" className="btn btn-sm btn-outline-success me-2">
                                 {user.name}
                             </Link>
-                            <Link href="/auth/register" className="btn btn-sm btn-danger">
+                            <button className="btn btn-sm btn-danger" onClick={logouthandler}>
                                 logout
-                            </Link>
+                            </button>
                         </div>
 
                         :
